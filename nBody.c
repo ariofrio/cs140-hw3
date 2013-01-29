@@ -18,7 +18,8 @@ int main(int argc, char *argv[]) {
 	// arguments: ./nBody r #n #iter #timestep
 	// or         ./nBody g #n #iter #timestep
 	if (argc != 5) {
-		fprintf(stderr, "invalid arguments\n");
+		fprintf(stderr, "Usage: %s MODE BODIES ITERATIONS TIMESTEP\n", argv[0]);
+    fprintf(stderr, "\nMODE must be either r[ead] or g[enerate]\n");
 		exit(0);
 	}
 	n = atoi(argv[2]);
