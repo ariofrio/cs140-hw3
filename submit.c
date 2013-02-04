@@ -6,6 +6,7 @@ Team Member 2 :
 
 #include "nBody.h"
 #include <math.h>
+#include <string.h>
 
 #define G 6.674e-11 // gravitational constant, m^3 kg^-1 s^-2
 typedef struct {
@@ -81,6 +82,7 @@ void nbody(double** ss, double** vs, double* ms,
   // Copy data to our MPI-friendly data structure.
   body* mine = (body *)malloc(sizeof(body) * size);
   body* theirs = (body *)malloc(sizeof(body) * size);
+  body* buffer = (body *)malloc(sizeof(body) * size);
   for(int i = 0; i < size; i++) {
     mine[i].s[0] = ss[i][0];
     mine[i].s[1] = ss[i][1];
@@ -151,16 +153,19 @@ void nbody(double** ss, double** vs, double* ms,
         }
       }
 
-      if(myrank % 2) { // avoid deadlock
-        MPI_Send(theirs, sizeof(body) * size, MPI_BYTE,
-            (myrank + 1) % nprocs, round, MPI_COMM_WORLD);
-        MPI_Recv(theirs, sizeof(body) * size, MPI_BYTE,
-            (myrank - 1) % nprocs, round, MPI_COMM_WORLD, &status);
-      } else {
-        MPI_Recv(theirs, sizeof(body) * size, MPI_BYTE,
-            (myrank - 1) % nprocs, round, MPI_COMM_WORLD, &status);
-        MPI_Send(theirs, sizeof(body) * size, MPI_BYTE,
-            (myrank + 1) % nprocs, round, MPI_COMM_WORLD);
+      if(round < nprocs - 1) {
+        if(myrank % 2) { // avoid deadlock
+          MPI_Send(theirs, sizeof(body) * size, MPI_BYTE,
+              (myrank + 1) % nprocs, round, MPI_COMM_WORLD);
+          MPI_Recv(theirs, sizeof(body) * size, MPI_BYTE,
+              (myrank - 1) % nprocs, round, MPI_COMM_WORLD, &status);
+        } else {
+          MPI_Recv(buffer, sizeof(body) * size, MPI_BYTE,
+              (myrank - 1) % nprocs, round, MPI_COMM_WORLD, &status);
+          MPI_Send(theirs, sizeof(body) * size, MPI_BYTE,
+              (myrank + 1) % nprocs, round, MPI_COMM_WORLD);
+          memcpy(theirs, buffer, sizeof(body) * size);
+        }
       }
     }
 
