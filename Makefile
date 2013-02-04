@@ -1,5 +1,5 @@
 assn3: nBody.c submit.c 
-	mpicc -o assn3 nBody.c submit.c -lm
+	mpicc -std=gnu99 -o assn3 nBody.c submit.c -lm
 
 clean: 
 	rm *.o
