@@ -29,7 +29,7 @@ void readnbody(double** ss, double** vs, double* ms, int n) {
 				exit(0);
 			}
 
-      if(i*nprocs/n == 0) {
+      if(i/size == 0) {
         ss[i][0] = s[0];
         ss[i][1] = s[1];
         ss[i][2] = s[2];
@@ -38,10 +38,10 @@ void readnbody(double** ss, double** vs, double* ms, int n) {
         vs[i][2] = v[2];
         ms[i] = m;
       } else {
-        // This limits n to approximately 32767/4 = 8191
-        MPI_Send(s, 3, MPI_DOUBLE, i*nprocs/n, i%nprocs, MPI_COMM_WORLD);
-        MPI_Send(v, 3, MPI_DOUBLE, i*nprocs/n, i%nprocs+size*2, MPI_COMM_WORLD);
-        MPI_Send(&m, 1, MPI_DOUBLE, i*nprocs/n, i%nprocs+size*4, MPI_COMM_WORLD);
+        // This limits size to approximately 32767/6 = 5461
+        MPI_Send(s, 3, MPI_DOUBLE, i/size, i%size, MPI_COMM_WORLD);
+        MPI_Send(v, 3, MPI_DOUBLE, i/size, i%size+size*2, MPI_COMM_WORLD);
+        MPI_Send(&m, 1, MPI_DOUBLE, i/size, i%size+size*4, MPI_COMM_WORLD);
       }
 		}
 	} else {
