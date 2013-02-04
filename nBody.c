@@ -22,15 +22,16 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "\nMODE must be either r[ead] or g[enerate]\n");
 		exit(0);
 	}
-	n = atoi(argv[2]);
-	size = n / nprocs;
+	n = atoi(argv[2]); // total number of bodies
+	size = n / nprocs; // number of bodies in this processor
 	iters = atoi(argv[3]);
-	timestep = atoi(argv[4]);
+	timestep = atoi(argv[4]); 
 	size = n / nprocs;
 	
 	int i; 
 	int j;
 
+  // position vectors for bodies in this processor
 	s = (double **)malloc(sizeof(double *) * size);
 	for (i = 0; i < size; i++) {
 		s[i] = (double*)malloc(sizeof(double) * 3);
@@ -40,6 +41,7 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
+  // velocity vectors for bodies in this processor
 	v = (double **)malloc(sizeof(double *) * size);
 	for (i = 0; i < size; i++) {
 		v[i] = (double*)malloc(sizeof(double) * 3);
@@ -49,6 +51,7 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
+  // mass values for bodies in this processor
 	m = (double *)malloc(sizeof(double) * size);
 
 	for(i = 0; i < size; i++) {
