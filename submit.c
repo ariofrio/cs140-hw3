@@ -184,16 +184,25 @@ void nbody(double** ss, double** vs, double* ms,
   // input file. Since we are writing to the stderr in this case, rather than
   // the stdout, make sure you dont add extra debugging statements in stderr.
 
+  MPI_Barrier(MPI_COMM_WORLD);
   for(int rank = 0; rank < nprocs; rank++) {
-    if(rank == myrank) {
+    if(myrank == 0) {
+      if(rank != 0) {
+        MPI_Recv(
+            mine, sizeof(body) * size, MPI_BYTE, rank, 0,
+            MPI_COMM_WORLD, &status);
+      }
       for(int i = 0; i < size; i++) {
         fprintf(stderr, OUTPUT_BODY,
             mine[i].s[0], mine[i].s[1], mine[i].s[2],
             mine[i].v[0], mine[i].v[1], mine[i].v[2],
             mine[i].m);
       }
+    } else {
+      MPI_Send(
+          mine, sizeof(body) * size, MPI_BYTE, 0, 0,
+          MPI_COMM_WORLD);
     }
-    MPI_Barrier(MPI_COMM_WORLD);
   }
 }
 
