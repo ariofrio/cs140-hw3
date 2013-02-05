@@ -5,8 +5,10 @@ Team Member 2 :
 */
 
 #include "nBody.h"
-#include <math.h>
 #include <string.h>
+#include <math.h>
+#include <stdlib.h>
+#include <time.h>
 
 #define G 6.674e-11 // gravitational constant, m^3 kg^-1 s^-2
 typedef struct {
@@ -66,8 +68,25 @@ void readnbody(double** ss, double** vs, double* ms, int n) {
 }
 
 void gennbody(double** s, double** v, double* m, int n) {
-  
-	printf("Generate nBody initial condition here.\n");
+	int myrank;
+	int nprocs;
+	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
+	MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
+  int size = n / nprocs;
+
+  srand(time(NULL) * myrank);
+  for(int i = 0; i < size; i++) {
+    m[i] = 1e30 * rand() / RAND_MAX;
+    double dist = .5e13 * rand() / RAND_MAX;
+    double theta = 2 * M_PI * rand() / RAND_MAX;
+    s[i][0] = dist * cos(theta);
+    s[i][1] = dist * sin(theta);
+    s[i][2] = 1e11 * (rand() - (RAND_MAX / 2)) / RAND_MAX;
+    v[i][0] = 0;
+    v[i][1] = 0;
+    v[i][2] = 0;
+  }
+  MPI_Barrier(MPI_COMM_WORLD);
 }
 
 void nbody(double** ss, double** vs, double* ms, 
