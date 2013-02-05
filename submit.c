@@ -110,11 +110,11 @@ void nbody(double** ss, double** vs, double* ms,
             (mine[j].s[2] - mine[k].s[2]) * (mine[j].s[2] - mine[k].s[2])
             );
         if(r != 0 && j != k) {
-          accel[j*3 + 0] -= G * mine[j].m * mine[k].m *
+          accel[j*3 + 0] -= G * mine[k].m *
                             (mine[j].s[0] - mine[k].s[0]) / r / r / r;
-          accel[j*3 + 1] -= G * mine[j].m * mine[k].m *
+          accel[j*3 + 1] -= G * mine[k].m *
                             (mine[j].s[1] - mine[k].s[1]) / r / r / r;
-          accel[j*3 + 2] -= G * mine[j].m * mine[k].m *
+          accel[j*3 + 2] -= G * mine[k].m *
                             (mine[j].s[2] - mine[k].s[2]) / r / r / r;
         }
       }
@@ -143,11 +143,11 @@ void nbody(double** ss, double** vs, double* ms,
               (mine[j].s[2] - theirs[k].s[2]) * (mine[j].s[2] - theirs[k].s[2])
               );
           if(r != 0) {
-            accel[j*3 + 0] -= G * mine[j].m * theirs[k].m *
+            accel[j*3 + 0] -= G * theirs[k].m *
                               (mine[j].s[0] - theirs[k].s[0]) / r / r / r;
-            accel[j*3 + 1] -= G * mine[j].m * theirs[k].m *
+            accel[j*3 + 1] -= G * theirs[k].m *
                               (mine[j].s[1] - theirs[k].s[1]) / r / r / r;
-            accel[j*3 + 2] -= G * mine[j].m * theirs[k].m *
+            accel[j*3 + 2] -= G * theirs[k].m *
                               (mine[j].s[2] - theirs[k].s[2]) / r / r / r;
           }
         }
@@ -172,8 +172,8 @@ void nbody(double** ss, double** vs, double* ms,
     // Let acceleration affect velocity and position
     for(int j = 0; j < size; j++) {
       mine[j].v[0] += timestep * accel[j*3 + 0];
-      mine[j].v[1] += timestep * accel[j*3 + 0];
-      mine[j].v[2] += timestep * accel[j*3 + 0];
+      mine[j].v[1] += timestep * accel[j*3 + 1];
+      mine[j].v[2] += timestep * accel[j*3 + 2];
       mine[j].s[0] += timestep * mine[j].v[0];
       mine[j].s[1] += timestep * mine[j].v[1];
       mine[j].s[2] += timestep * mine[j].v[2];
